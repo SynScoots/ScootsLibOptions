@@ -1,5 +1,5 @@
 ScootsLibOptions = {
-    ['version'] = '1.1.0',
+    ['version'] = '1.1.1',
     ['title'] = 'ScootsLibOptions',
     ['processOptionMap'] = {},
     ['insertFieldCallbacks'] = {},
@@ -727,8 +727,8 @@ ScootsLibOptions.core = {
                     ['edgeFile'] = 'Interface\\DialogFrame\\UI-DialogBox-Border',
                     ['edgeSize'] = 32,
                     ['insets'] = {
-                        ['top'] = 12,
-                        ['right'] = 12,
+                        ['top'] = 11,
+                        ['right'] = 11,
                         ['bottom'] = 9,
                         ['left'] = 11,
                     },
@@ -1199,7 +1199,7 @@ ScootsLibOptions.core = {
         textbox.changeEvent = function(self, forceChange)
             local value, hasChanged = textbox.sanitiseValue(self:GetText())
             local onTextChanged = self:GetScript('OnTextChanged')
-        
+            
             if(hasChanged == false) then
                 if(not self:HasFocus() or forceChange == true) then
                     self:SetScript('OnTextChanged', nil)
@@ -1617,11 +1617,7 @@ ScootsLibOptions.core = {
             ['hideMinMax'] = data.hideMinMax,
             ['callbackWhileDragging'] = data.callbackWhileDragging,
             ['callback'] = function(self, value)
-                value = textbox.sanitiseValue(value)
-                
-                textbox:SetText(value)
-                
-                data.callback(self, value)
+                textbox:SetText(textbox.sanitiseValue(value))
             end,
             ['tooltip'] = data.tooltip,
             ['tooltipExtra'] = data.tooltipExtra,
@@ -1640,8 +1636,8 @@ ScootsLibOptions.core = {
             ['callback'] = function(self, value)
                 if(slider.isDragging ~= true or data.callbackWhileDragging == true) then
                     if(slider.lastValue ~= value) then
-                        slider.lastValue = value
                         data.callback(slider, value)
+                        slider.lastValue = value
                         slider:SetValue(value)
                     end
                 end
@@ -1659,7 +1655,7 @@ ScootsLibOptions.core = {
             if(changeFromTextbox) then
                 changeFromTextbox = nil
             else
-                textbox:SetText(value)
+                textbox:SetText(textbox.sanitiseValue(value))
                 self.isDragging = true
             end
         end)
