@@ -1,5 +1,5 @@
 ScootsLibOptions = {
-    ['version'] = '1.1.1',
+    ['version'] = '1.1.2',
     ['title'] = 'ScootsLibOptions',
     ['processOptionMap'] = {},
     ['insertFieldCallbacks'] = {},
@@ -1492,14 +1492,11 @@ ScootsLibOptions.core = {
             end)
         end
         
-        local old_UIDropDownMenu_InitializeHelper = UIDropDownMenu_InitializeHelper
-        UIDropDownMenu_InitializeHelper = function(self)
-            old_UIDropDownMenu_InitializeHelper(self)
-            
+        hooksecurefunc('UIDropDownMenu_InitializeHelper', function()
             if(self == dropdown) then
                 self:SetHeight(26)
             end
-        end
+        end)
         
         dropdown.refresh()
         
