@@ -1,5 +1,5 @@
 ScootsLibOptions = {
-    ['version'] = '1.1.2',
+    ['version'] = '1.1.3',
     ['title'] = 'ScootsLibOptions',
     ['processOptionMap'] = {},
     ['insertFieldCallbacks'] = {},
@@ -1492,7 +1492,7 @@ ScootsLibOptions.core = {
             end)
         end
         
-        hooksecurefunc('UIDropDownMenu_InitializeHelper', function()
+        hooksecurefunc('UIDropDownMenu_InitializeHelper', function(self)
             if(self == dropdown) then
                 self:SetHeight(26)
             end
