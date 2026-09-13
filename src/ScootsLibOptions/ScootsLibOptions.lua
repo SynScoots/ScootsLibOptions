@@ -1,5 +1,5 @@
 ScootsLibOptions = {
-    ['version'] = '1.1.3',
+    ['version'] = '1.2.0',
     ['title'] = 'ScootsLibOptions',
     ['processOptionMap'] = {},
     ['insertFieldCallbacks'] = {},
@@ -352,7 +352,7 @@ ScootsLibOptions.core = {
             end
             
             firstField:SetPoint('TOPLEFT', prev, 'BOTTOMLEFT', xOffset or 0, 0 - (10 + (yOffset or 0)))
-            height = height + subHeight + 10
+            height = height + subHeight
             
             self:SetHeight(height)
             
@@ -485,6 +485,7 @@ ScootsLibOptions.core = {
             ['defaultState'] = pageData.parentAddon.optionGetCallback(fieldData.key),
             ['tooltip'] = fieldData.tooltip,
             ['tooltipExtra'] = fieldData.tooltipExtra,
+            ['itemTooltip'] = fieldData.itemTooltip,
             ['callback'] = function(self, value)
                 pageData.parentAddon.optionChangeCallback(pageData.key, fieldData.key, value)
             
@@ -518,6 +519,7 @@ ScootsLibOptions.core = {
             ['text'] = fieldData.text,
             ['tooltip'] = fieldData.tooltip,
             ['tooltipExtra'] = fieldData.tooltipExtra,
+            ['itemTooltip'] = fieldData.itemTooltip,
             ['colour'] = function()
                 return pageData.parentAddon.optionGetCallback(fieldData.key)
             end,
@@ -538,6 +540,7 @@ ScootsLibOptions.core = {
             ['label'] = fieldData.label,
             ['tooltip'] = fieldData.tooltip,
             ['tooltipExtra'] = fieldData.tooltipExtra,
+            ['itemTooltip'] = fieldData.itemTooltip,
             ['default'] = pageData.parentAddon.optionGetCallback(fieldData.key),
             ['numeric'] = fieldData.numeric,
             ['width'] = fieldData.width,
@@ -557,6 +560,7 @@ ScootsLibOptions.core = {
             ['label'] = fieldData.label,
             ['tooltip'] = fieldData.tooltip,
             ['tooltipExtra'] = fieldData.tooltipExtra,
+            ['itemTooltip'] = fieldData.itemTooltip,
             ['default'] = pageData.parentAddon.optionGetCallback(fieldData.key),
             ['resetText'] = fieldData.resetText,
             ['resetValue'] = fieldData.resetValue,
@@ -583,6 +587,7 @@ ScootsLibOptions.core = {
             ['max'] = fieldData.max,
             ['tooltip'] = fieldData.tooltip,
             ['tooltipExtra'] = fieldData.tooltipExtra,
+            ['itemTooltip'] = fieldData.itemTooltip,
             ['resetText'] = fieldData.resetText,
             ['resetCallback'] = fieldData.resetCallback,
             ['default'] = pageData.parentAddon.optionGetCallback(fieldData.key),
@@ -616,6 +621,7 @@ ScootsLibOptions.core = {
             ['label'] = fieldData.label,
             ['tooltip'] = fieldData.tooltip,
             ['tooltipExtra'] = fieldData.tooltipExtra,
+            ['itemTooltip'] = fieldData.itemTooltip,
             ['callback'] = function(self, value)
                 pageData.parentAddon.optionChangeCallback(pageData.key, fieldData.key, value)
             
@@ -639,6 +645,7 @@ ScootsLibOptions.core = {
             ['hideMinMax'] = fieldData.hideMinMax,
             ['tooltip'] = fieldData.tooltip,
             ['tooltipExtra'] = fieldData.tooltipExtra,
+            ['itemTooltip'] = fieldData.itemTooltip,
             ['callbackWhileDragging'] = fieldData.callbackWhileDragging,
             ['callback'] = function(self, value)
                 value = tonumber(value)
@@ -664,6 +671,7 @@ ScootsLibOptions.core = {
             ['label'] = fieldData.label,
             ['tooltip'] = fieldData.tooltip,
             ['tooltipExtra'] = fieldData.tooltipExtra,
+            ['itemTooltip'] = fieldData.itemTooltip,
             ['callbackWhileDragging'] = fieldData.callbackWhileDragging,
             ['callback'] = function(self, value)
                 pageData.parentAddon.optionChangeCallback(pageData.key, fieldData.key, value)
@@ -712,7 +720,10 @@ ScootsLibOptions.core = {
             ['width'] = fieldData.width or 400,
             ['height'] = fieldData.height,
             ['shape'] = fieldData.shape,
+            ['collapsible'] = fieldData.collapsible,
+            ['collapsed'] = fieldData.collapsed,
             ['callback'] = fieldData.callback,
+            ['collapseCallback'] = fieldData.collapseCallback,
         })
     end,
     ----
@@ -780,6 +791,42 @@ ScootsLibOptions.core = {
             group:SetHeight(data.height or (height + (fromTop * 2)))
         else
             group:SetHeight(height + fromTop)
+        end
+        
+        if(data.collapsible) then
+            group.fullHeight = group:GetHeight()
+            data.childFrameList = {group:GetChildren()}
+            
+            data.toggleCallback = function(state, suppressCollapseCallback)
+                for _, childFrame in ipairs(data.childFrameList) do
+                    if(state) then
+                        childFrame:Hide()
+                    else
+                        childFrame:Show()
+                    end
+                end
+                
+                if(state) then
+                    group:SetHeight(30)
+                else
+                    group:SetHeight(group.fullHeight)
+                end
+                
+                if(not suppressCollapseCallback and data.collapseCallback) then
+                    data.collapseCallback()
+                end
+            end
+            
+            data.toggleCallback(data.collapsed, true)
+            
+            local toggle = ScootsLibOptions.core.insertToggleButton({
+                ['framename'] = data.framename .. '-Toggle',
+                ['parent'] = group,
+                ['collapsed'] = data.collapsed,
+                ['callback'] = data.toggleCallback,
+            })
+            
+            toggle:SetPoint('TOPRIGHT', group, 'TOPRIGHT', 0 - fromLeft, 0 - 9)
         end
         
         return group
@@ -852,6 +899,7 @@ ScootsLibOptions.core = {
             ['field'] = checkbox,
             ['tooltip'] = data.tooltip,
             ['tooltipExtra'] = data.tooltipExtra,
+            ['itemTooltip'] = data.itemTooltip,
         })
         
         checkbox:SetScript('OnClick', function(self)
@@ -967,6 +1015,7 @@ ScootsLibOptions.core = {
             ['field'] = button,
             ['tooltip'] = data.tooltip,
             ['tooltipExtra'] = data.tooltipExtra,
+            ['itemTooltip'] = data.itemTooltip,
         })
         
         button.applyExternalValue = function() end
@@ -1017,6 +1066,7 @@ ScootsLibOptions.core = {
             ['field'] = textbox,
             ['tooltip'] = data.tooltip,
             ['tooltipExtra'] = data.tooltipExtra,
+            ['itemTooltip'] = data.itemTooltip,
         })
         
         textbox.bgLeft = textbox:CreateTexture(nil, 'BACKGROUND')
@@ -1504,6 +1554,7 @@ ScootsLibOptions.core = {
             ['field'] = dropdown.button,
             ['tooltip'] = data.tooltip,
             ['tooltipExtra'] = data.tooltipExtra,
+            ['itemTooltip'] = data.itemTooltip,
         })
         
         dropdown.applyExternalValue = function(value)
@@ -1582,6 +1633,7 @@ ScootsLibOptions.core = {
             ['field'] = slider,
             ['tooltip'] = data.tooltip,
             ['tooltipExtra'] = data.tooltipExtra,
+            ['itemTooltip'] = data.itemTooltip,
         })
         
         slider.applyExternalValue = function(value)
@@ -2301,14 +2353,19 @@ ScootsLibOptions.core = {
     end,
     ----
     ['applyFieldTooltip'] = function(data)
-        if(data.tooltip ~= nil) then
+        if(data.itemTooltip or data.tooltip) then
             data.field:SetScript('OnEnter', function()
                 GameTooltip:SetOwner(data.field, 'ANCHOR_CURSOR_RIGHT')
-                GameTooltip:SetText(data.tooltip, nil, nil, nil, nil, 1)
                 
-                if(data.tooltipExtra ~= nil) then
-                    for _, line in ipairs(data.tooltipExtra) do
-                        ScootsLibOptions.core.attachTooltipDoubleLine(line[1], line[2])
+                if(data.itemTooltip) then
+                    GameTooltip:SetHyperlink((select(2, GetItemInfoCustom(data.itemTooltip))))
+                else
+                    GameTooltip:SetText(data.tooltip, nil, nil, nil, nil, 1)
+                    
+                    if(data.tooltipExtra ~= nil) then
+                        for _, line in ipairs(data.tooltipExtra) do
+                            ScootsLibOptions.core.attachTooltipDoubleLine(line[1], line[2])
+                        end
                     end
                 end
                 
@@ -2329,6 +2386,46 @@ ScootsLibOptions.core = {
             NORMAL_FONT_COLOR.g,
             NORMAL_FONT_COLOR.b
         )
+    end,
+    ['insertToggleButton'] = function(data)
+        local toggle = CreateFrame('Button', data.framename, data.parent)
+        toggle:SetSize(data.width or 12, data.height or 12)
+        toggle:SetHighlightTexture('Interface\\Buttons\\UI-PlusButton-Hilight')
+        
+        data.collapsed = data.collapsed or false
+        
+        toggle.setTextures = function()
+            if(data.collapsed) then
+                toggle:SetNormalTexture('Interface\\Buttons\\UI-PlusButton-Up')
+                toggle:SetPushedTexture('Interface\\Buttons\\UI-PlusButton-Down')
+                toggle:SetDisabledTexture('Interface\\Buttons\\UI-PlusButton-Disabled')
+            else
+                toggle:SetNormalTexture('Interface\\Buttons\\UI-MinusButton-Up')
+                toggle:SetPushedTexture('Interface\\Buttons\\UI-MinusButton-Down')
+                toggle:SetDisabledTexture('Interface\\Buttons\\UI-MinusButton-Disabled')
+            end
+        end
+        
+        toggle.setTextures()
+        
+        for _, texture in pairs({
+            toggle:GetNormalTexture(),
+            toggle:GetPushedTexture(),
+            toggle:GetDisabledTexture(),
+            toggle:GetHighlightTexture(),
+        }) do
+            texture:ClearAllPoints()
+            texture:SetAllPoints()
+            texture:SetTexCoord(0.05, 0.88, 0.12, 0.88)
+        end
+        
+        toggle:SetScript('OnClick', function()
+            data.collapsed = not data.collapsed
+            toggle.setTextures()
+            data.callback(data.collapsed)
+        end)
+        
+        return toggle
     end,
 }
 
